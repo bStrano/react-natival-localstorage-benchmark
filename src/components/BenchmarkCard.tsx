@@ -7,13 +7,29 @@ interface IBenchmarkCardProps {
 }
 
 function BenchmarkCard({title}: IBenchmarkCardProps) {
+  const simulationContext = useContext(SimulationContext);
+
   return (
     <View>
       <Text>{title}</Text>
-      <BenchmarkItem label={'Preparação'} value={''} />
-      <BenchmarkItem label={'Insert'} value={''} />
-      <BenchmarkItem label={'Select'} value={''} />
-      <BenchmarkItem label={'Select 1 Join'} value={''} />
+      <BenchmarkItem
+        label={'Insert'}
+        value={simulationContext!.benchmarkData[
+          Databases.SQLITE
+        ].getInsertPerformance()}
+      />
+      <BenchmarkItem
+        label={'Select'}
+        value={simulationContext!.benchmarkData[
+          Databases.SQLITE
+        ].getSelectPerformance()}
+      />
+      <BenchmarkItem
+        label={'Select 1 Join'}
+        value={simulationContext!.benchmarkData[
+          Databases.SQLITE
+        ].getSelectRelation()}
+      />
     </View>
   );
 }

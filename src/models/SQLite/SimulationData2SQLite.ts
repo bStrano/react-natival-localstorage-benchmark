@@ -6,7 +6,7 @@ class SimulationDataSQLite
   implements ISimulationDataSQLite {
   getValues() {
     return `
-      (${this.name})
+      ('${this.name}')
     `;
   }
 }

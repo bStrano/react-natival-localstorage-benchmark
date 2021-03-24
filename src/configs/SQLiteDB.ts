@@ -1,5 +1,6 @@
 import { openDatabase } from "react-native-sqlite-storage";
 
+SQLite.enablePromise(true);
 export default function getSQLite() {
-  return openDatabase({name: 'SQLITE', location: 'default'});
+  return SQLite.openDatabase({name: 'SQLITE', location: 'default'});
 }

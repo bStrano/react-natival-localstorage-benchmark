@@ -3,14 +3,14 @@ import { StyleSheet, Text, View } from "react-native";
 
 interface IBenchmarkItemProps {
   label: string;
-  value: string;
+  value: number;
 }
 
 function BenchmarkItem({label, value}: IBenchmarkItemProps) {
   return (
     <View style={styles.container}>
-      <Text>{label}</Text>
-      <Text>{value}</Text>
+      <Text style={styles.label}>{label}</Text>
+      <Text>{value / 1000} s</Text>
     </View>
   );
 }
@@ -18,6 +18,10 @@ function BenchmarkItem({label, value}: IBenchmarkItemProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+  },
+  label: {
+    flex: 1,
+    fontWeight: 'bold',
   },
 });
 

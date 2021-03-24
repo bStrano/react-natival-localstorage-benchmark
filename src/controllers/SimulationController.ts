@@ -1,8 +1,8 @@
-import SimulationData, { ISimulationStatus } from "../models/SimulationData";
+import SimulationData, {ISimulationStatus} from '../models/SimulationData';
 
-import DatabasesEnum from "../constants/Databases";
-import SimulationData2Builder from "../builders/SimulationData2Builder";
-import SimulationDataBuilder from "../builders/SimulationDataBuilder";
+import DatabasesEnum from '../constants/Databases';
+import SimulationData2Builder from '../builders/SimulationData2Builder';
+import SimulationDataBuilder from '../builders/SimulationDataBuilder';
 
 export interface ISimulationController {
   generateData: () => SimulationData[];
@@ -11,11 +11,12 @@ export interface ISimulationController {
   getDatabaseName: () => DatabasesEnum;
 }
 
-abstract class SimulationController<T> {
-  abstract createEnvironment(): void;
+abstract class SimulationController {
+  abstract async createEnvironment(): Promise<void>;
   abstract getDatabaseName(): DatabasesEnum;
-  abstract insertAll(data: any[], data2: any[]): void;
-  abstract selectAll(data: []): void;
+  abstract async insertAll(data: any[], data2: any[]): Promise<void>;
+  abstract async selectAll(): Promise<void>;
+  abstract async selectAllWithJoin(): Promise<void>;
   /**
    * Gera uma lista contendo os objetos que serão utilizados no teste de performance.
    * @param samplingAmount - Quantidade de dados que serão utilizados no teste

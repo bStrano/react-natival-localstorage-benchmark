@@ -4,111 +4,120 @@ import ISimulationDataSQLite from "../interfaces/ISimulationDataSQLite";
 import DatabasesEnum from "../constants/Databases";
 
 class SimulationControllerSQLite extends SimulationController {
-  static createEnvironment(): void {
-    const db = getSQLite();
-    db.transaction(tx => {
-      tx.executeSql(
-        `
+  constructor() {
+    super();
+  }
+  getDatabaseName(): DatabasesEnum {
+    return DatabasesEnum.SQLITE;
+  }
+
+  async createEnvironment(): Promise<void> {
+    const db = await getSQLite();
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        tx => {
+          tx.executeSql(
+            `
         CREATE TABLE IF NOT EXISTS SIMULATION(
           id INTEGER PRIMARY KEY NOT NULL,
           number REAL,
           string TEXT,
-          timestamp TEXT
-        )
-      `,
-      ),
-        tx.executeSql(
-          `
-        CREATE TABLE IF NOT EXISTS SIMULATION(
-          id INTEGER PRIMARY KEY NOT NULL,
-          number REAL,
-          string TEXT,
-          timestamp TEXT
-           simulation2_id INTEGER
+          timestamp TEXT,
+           simulation2_id INTEGER,
           FOREIGN KEY(simulation2_id) REFERENCES SIMULATION2(id)
         )
       `,
-        ),
-        tx.executeSql(
-          `
+          ),
+            tx.executeSql(
+              `
         CREATE TABLE IF NOT EXISTS SIMULATION2(
           id INTEGER PRIMARY KEY NOT NULL,
           name TEXT
         )
       `,
-        ),
-        tx.executeSql(
-          `
+            ),
+            tx.executeSql(
+              `
         CREATE TABLE IF NOT EXISTS SIMULATION3(
           id INTEGER PRIMARY KEY NOT NULL,
           name TEXT
         )
       `,
-        );
-      tx.executeSql(
-        `
+            );
+          tx.executeSql(
+            `
        DELETE FROM SIMULATION;
        DELETE FROM SIMULATION2;
        DELETE FROM SIMULATION3;
       `,
-      );
-      tx.executeSql(
-        `
+          );
+          tx.executeSql(
+            `
    
        DELETE FROM SIMULATION2;
       `,
+          );
+        },
+        error => reject(error),
+        success => resolve(),
       );
     });
   }
 
-  static selectAll() {
-    const db = getSQLite();
-    db.transaction(
-      tx => {
-        console.time('SELECT');
-        tx.executeSql(
-          'SELECT * FROM Simulation  ORDER BY number',
-          null,
-          (tx, results) => {
-            let data = [];
-            for (let i = 0; i < results.rows.length; i++) {
-              const item = results.rows.item(i);
-              data.push(i);
-            }
+  async selectAll(): Promise<void> {
+    const db = await getSQLite();
 
-            console.log('OK', data.length);
-          },
-          error => console.log('Get Clientes' + error),
-        );
-      },
-      err => console.error(err),
-      () => console.timeEnd('SELECT'),
-    );
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        tx => {
+          console.time('SELECT');
+          tx.executeSql(
+            'SELECT * FROM Simulation  ORDER BY number',
+            [],
+            (tx, results) => {
+              let data = [];
+              for (let i = 0; i < results.rows.length; i++) {
+                const item = results.rows.item(i);
+                data.push(i);
+              }
 
-    db.transaction(
-      tx => {
-        console.time('SELECTJOIN');
-        tx.executeSql(
-          'SELECT * FROM Simulation  LEFT JOIN SIMULATION2 on SIMULATION.id = SIMULATION2.simulation_id  ORDER BY' +
-            ' number',
-          null,
-          (tx, results) => {
-            let data = [];
-            for (let i = 0; i < results.rows.length; i++) {
-              const item = results.rows.item(i);
-              data.push(i);
-            }
-
-            console.log('OK', data.length);
-          },
-          error => console.log(error),
-        );
-      },
-      err => console.error(err),
-      () => console.timeEnd('SELECTJOIN'),
-    );
+              console.log('OK', data.length);
+            },
+            error => console.log('Get Clientes' + error),
+          );
+        },
+        err => reject(err),
+        () => resolve(),
+      );
+    });
   }
 
+  async selectAllWithJoin(): Promise<void> {
+    const db = await getSQLite();
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        tx => {
+          console.time('SELECTJOIN');
+          tx.executeSql(
+            'SELECT * FROM Simulation  LEFT JOIN SIMULATION2 on SIMULATION.simulation2_id = SIMULATION2.id ORDER BY number',
+            [],
+            (tx, results) => {
+              let data = [];
+              for (let i = 0; i < results.rows.length; i++) {
+                const item = results.rows.item(i);
+                data.push(i);
+              }
+
+              console.log('OK', data.length);
+            },
+            error => console.log(error),
+          );
+        },
+        err => reject(err),
+        () => resolve(),
+      );
+    });
+  }
   arrayToVALUES(array: ISimulationDataSQLite[]) {
     if (array.length === 0) {
       return '';
@@ -120,7 +129,7 @@ class SimulationControllerSQLite extends SimulationController {
     }
 
     let results = [];
-    let resultsValues = [];
+    let resultsValues = [] as string[];
     while (array.length) {
       results.push(array.splice(0, size));
     }
@@ -137,47 +146,39 @@ class SimulationControllerSQLite extends SimulationController {
 
       resultsValues.push(values);
     });
-    console.log('RESILTS VALUES', resultsValues.length);
     return resultsValues;
   }
 
-  createEnvironment(): void {}
+  async insertAll(data: any[], data2: any[]): Promise<void> {
+    const db = await getSQLite();
+    let values = this.arrayToVALUES(data) as string[];
+    let values2 = this.arrayToVALUES(data2) as string[];
 
-  getDatabaseName(): DatabasesEnum {
-    return DatabasesEnum.SQLITE;
-  }
-
-  selectAll(data: []): void {}
-
-  insertAll(data: any[], data2: any[]): void {
-    const db = getSQLite();
-    let values = this.arrayToVALUES(data);
-    let values2 = this.arrayToVALUES(data2);
-    db.transaction(
-      tx => {
-        console.time('INSERT');
-        values.forEach(item => {
-          tx.executeSql(
-            `
-          INSERT INTO SIMULATION(id,number,string,timestamp) VALUES ${item}
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        tx => {
+          console.time('INSERT');
+          values.forEach(item => {
+            tx.executeSql(
+              `
+          INSERT INTO SIMULATION(number,string,timestamp,simulation2_id) VALUES ${item}
       `,
-          );
-        });
-        values2.forEach(item => {
-          tx.executeSql(
-            `
-          INSERT INTO SIMULATION2(id,simulation_id) VALUES ${item}
+            );
+          });
+          values2.forEach(item => {
+            tx.executeSql(
+              `
+          INSERT INTO SIMULATION2(name) VALUES ${item}
       `,
-          );
-        });
-      },
-      error => console.error('Falha ao inserir', error),
-      () => {
-        console.timeEnd('INSERT');
-        console.log('SELECT');
-        SimulationControllerSQLite.selectAll();
-      },
-    );
+            );
+          });
+        },
+        error => reject(error),
+        () => {
+          resolve();
+        },
+      );
+    });
   }
 }
 
