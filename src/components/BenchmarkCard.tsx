@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Text, View } from "react-native";
 import BenchmarkItem from "./BenchmarkItem";
+import { SimulationContext } from "../providers/SimulationProvider";
+import Databases from "../constants/Databases";
 
 interface IBenchmarkCardProps {
   title: string;

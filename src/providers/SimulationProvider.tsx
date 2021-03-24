@@ -1,6 +1,8 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import SimulationControllerSQLite from "../controllers/SimulationControllerSQLite";
 import { ISimulationStatus } from "../models/SimulationData";
+import Benchmark from "../models/Benchmark";
+import DatabasesEnum from "../constants/Databases";
 
 interface ISimulationProviderProps {
   children: JSX.Element;
