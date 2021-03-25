@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 import { SimulationContext } from "../providers/SimulationProvider";
 import BenchmarkCard from "../components/BenchmarkCard";
+import DatabasesEnum from "../constants/Databases";
 
 interface IHomeScreenProps {}
 
@@ -23,7 +24,8 @@ function HomeScreen(props: IHomeScreenProps) {
           title="Iniciar simulação"
           color="#841584"
         />
-        <BenchmarkCard title={'SQLite'} />
+        <BenchmarkCard title={'SQLite'} database={DatabasesEnum.SQLITE} />
+        <BenchmarkCard title={'Realm'} database={DatabasesEnum.REALM} />
         {/*<Text>*/}
         {/*  {SimulationController.getStatusName(simulationContext?.status)}*/}
         {/*</Text>*/}

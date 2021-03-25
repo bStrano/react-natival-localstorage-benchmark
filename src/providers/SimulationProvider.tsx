@@ -3,6 +3,8 @@ import SimulationControllerSQLite from "../controllers/SimulationControllerSQLit
 import { ISimulationStatus } from "../models/SimulationData";
 import Benchmark from "../models/Benchmark";
 import DatabasesEnum from "../constants/Databases";
+import SimulationController from "../controllers/SimulationController";
+import SimulationControllerRealm from "../controllers/SimulationControllerRealm";
 
 interface ISimulationProviderProps {
   children: JSX.Element;
@@ -29,7 +31,9 @@ function SimulationProvider(props: ISimulationProviderProps) {
   ]);
   const activeDatabase = useRef<number>(DatabasesEnum.SQLITE);
   const [status, setStatus] = useState(ISimulationStatus.READY);
-  const simulationControllerSQLite = useRef(new SimulationControllerSQLite());
+  const simulationController = useRef<SimulationController>(
+    new SimulationControllerSQLite(),
+  );
   const currentBenchmark = useRef<Benchmark>(new Benchmark());
 
   useEffect(() => {
@@ -47,38 +51,70 @@ function SimulationProvider(props: ISimulationProviderProps) {
   }
 
   async function startSimulation() {
-    console.log('Iniciando processo');
-    await simulationControllerSQLite.current.createEnvironment();
-    if (status === ISimulationStatus.READY) {
-      await simulationControllerSQLite.current.createEnvironment();
-      console.log('Iniciando Preparação');
-      setStatus(ISimulationStatus.PREPARATION);
+    console.log(DatabasesEnum);
+    console.log(Object.keys(DatabasesEnum));
+    console.log(Object.values(DatabasesEnum));
+    for (let value of Object.values(DatabasesEnum)) {
+      if (typeof value === 'number') {
+        await startSimulationDatabase(value);
+      }
+    }
+  }
 
-      const {data, data2} = simulationControllerSQLite.current.generateData(
-        Number(sampling),
-      );
-      console.log('DATA LENGTH', data.length, data2.length);
+  async function startSimulationDatabase(database: DatabasesEnum) {
+    try {
+      console.log('Iniciando processo', database);
+      await changeDatabase(database);
+      await simulationController.current.createEnvironment();
+      if (status === ISimulationStatus.READY) {
+        await simulationController.current.createEnvironment();
+        setStatus(ISimulationStatus.PREPARATION);
 
-      console.log('INSERT');
-      currentBenchmark!.current!.insert!.start = new Date().getTime();
-      await simulationControllerSQLite.current.insertAll([...data], [...data2]);
-      currentBenchmark!.current!.insert!.final = new Date().getTime();
-      updateBenchmark();
-      currentBenchmark!.current!.selectRelation!.start = new Date().getTime();
-      await simulationControllerSQLite.current.selectAllWithJoin();
-      currentBenchmark!.current!.selectRelation!.final = new Date().getTime();
-      updateBenchmark();
-      console.log('SELECT');
-      currentBenchmark!.current!.select!.start = new Date().getTime();
-      await simulationControllerSQLite.current.selectAll();
-      currentBenchmark!.current!.select!.final = new Date().getTime();
-      updateBenchmark();
-      console.log('SELECT JOIN');
+        const {data, data2} = simulationController.current.generateData(
+          Number(sampling),
+        );
 
-      console.log('END');
-      setStatus(ISimulationStatus.PROGRESS);
-      console.log('DATA LENGTH', data.length);
-      setStatus(ISimulationStatus.READY);
+        await runSection('insert', async () => {
+          await simulationController.current.insertAll([...data], [...data2]);
+        });
+        await runSection('selectRelation', async () => {
+          await simulationController.current.selectAllWithJoin();
+        });
+        await runSection('select', async () => {
+          await simulationController.current.selectAll();
+        });
+
+        await simulationController.current.clearEnvironment();
+        // setStatus(ISimulationStatus.PROGRESS);
+        // setStatus(ISimulationStatus.READY);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async function runSection(
+    name: 'select' | 'insert' | 'selectRelation',
+    commandCB: () => Promise<void>,
+  ) {
+    console.log(`[${name}] Start`);
+    currentBenchmark!.current[name].start = new Date().getTime();
+    await commandCB();
+    currentBenchmark!.current[name].final = new Date().getTime();
+    console.log(`[${name}] End`);
+    updateBenchmark();
+  }
+
+  async function changeDatabase(database: DatabasesEnum) {
+    currentBenchmark.current = new Benchmark();
+    switch (database) {
+      case DatabasesEnum.REALM:
+        simulationController.current = new SimulationControllerRealm();
+        break;
+      case DatabasesEnum.SQLITE:
+        simulationController.current = new SimulationControllerSQLite();
+        break;
+      default:
+        break;
     }
   }
 

@@ -1,11 +1,13 @@
 import SimulationDataSQLite from "../models/SQLite/SimulationDataSQLite";
-import SimulationData2SQLite from "../models/SQLite/SimulationData2SQLite";
 import DatabasesEnum from "../constants/Databases";
 import RandomUtil from "../utils/RandomUtil";
+import SimulationDataRealm from "../models/realm/SimulationDataRealm";
+import SimulationData2Realm from "../models/realm/SimulationData2Realm";
 
 interface ISimulationBuilder {
-  build(): SimulationDataSQLite;
   produceSQLite(): SimulationDataSQLite;
+  produceRealm(): SimulationDataRealm;
+  build(): SimulationDataSQLite | SimulationDataRealm;
 }
 
 interface ISimulationBuilderConstructor {
@@ -14,34 +16,38 @@ interface ISimulationBuilderConstructor {
 }
 
 class SimulationDataBuilder implements ISimulationBuilder {
-  private readonly simulation: SimulationDataSQLite;
   private readonly samplingAmount: number;
-
+  private readonly database: DatabasesEnum;
+  private readonly data: any;
   constructor({samplingAmount, database}: ISimulationBuilderConstructor) {
     this.samplingAmount = samplingAmount;
-    switch (database) {
-      case DatabasesEnum.SQLITE:
-        this.simulation = this.produceSQLite();
-        break;
-      default:
-        throw Error('Database invalid');
-    }
-  }
-
-  produceSQLite(): SimulationDataSQLite {
-    return new SimulationDataSQLite({
-      simulation2: new SimulationData2SQLite({
+    this.database = database;
+    this.data = {
+      simulation2: new SimulationData2Realm({
         id: Math.floor(Math.random() * (this.samplingAmount - 1 + 1) + 1),
         name: '',
       }),
       timestamp: new Date(),
       string: RandomUtil.getRandomString(),
       number: Math.random(),
-    });
+    };
   }
 
-  build(): SimulationDataSQLite {
-    return this.simulation;
+  produceSQLite(): SimulationDataSQLite {
+    return new SimulationDataSQLite(this.data);
+  }
+
+  produceRealm(): SimulationDataRealm {
+    return new SimulationDataRealm(this.data);
+  }
+
+  build(): SimulationDataSQLite | SimulationDataRealm {
+    switch (this.database) {
+      case DatabasesEnum.REALM:
+        return this.produceRealm();
+      case DatabasesEnum.SQLITE:
+        return this.produceSQLite();
+    }
   }
 }
 export default SimulationDataBuilder;

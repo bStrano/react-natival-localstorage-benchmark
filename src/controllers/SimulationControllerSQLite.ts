@@ -2,6 +2,7 @@ import SimulationController from "./SimulationController";
 import getSQLite from "../configs/SQLiteDB";
 import ISimulationDataSQLite from "../interfaces/ISimulationDataSQLite";
 import DatabasesEnum from "../constants/Databases";
+import { deleteDatabase } from "react-native-sqlite-storage";
 
 class SimulationControllerSQLite extends SimulationController {
   constructor() {
@@ -179,6 +180,10 @@ class SimulationControllerSQLite extends SimulationController {
         },
       );
     });
+  }
+
+  async clearEnvironment(): Promise<void> {
+    await deleteDatabase({name: 'SQLITE', location: 'default'});
   }
 }
 

@@ -1,17 +1,17 @@
 import SimulationData from "../SimulationData";
-import * as Realm from "realm";
+import Realm from "realm";
 
-class SimulationRealm extends SimulationData {
+class SimulationDataRealm extends SimulationData {
   public static schema: Realm.ObjectSchema = {
     name: 'Simulation',
     primaryKey: '_id',
     properties: {
       _id: 'objectId',
-      number: 'number',
+      number: 'float',
       string: 'string',
-      timestamp: 'Date',
+      timestamp: 'date',
     },
   };
 }
 
-export default SimulationRealm;
+export default SimulationDataRealm;

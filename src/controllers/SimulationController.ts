@@ -1,8 +1,8 @@
-import SimulationData, {ISimulationStatus} from '../models/SimulationData';
+import SimulationData, { ISimulationStatus } from "../models/SimulationData";
 
-import DatabasesEnum from '../constants/Databases';
-import SimulationData2Builder from '../builders/SimulationData2Builder';
-import SimulationDataBuilder from '../builders/SimulationDataBuilder';
+import DatabasesEnum from "../constants/Databases";
+import SimulationData2Builder from "../builders/SimulationData2Builder";
+import SimulationDataBuilder from "../builders/SimulationDataBuilder";
 
 export interface ISimulationController {
   generateData: () => SimulationData[];
@@ -17,6 +17,7 @@ abstract class SimulationController {
   abstract async insertAll(data: any[], data2: any[]): Promise<void>;
   abstract async selectAll(): Promise<void>;
   abstract async selectAllWithJoin(): Promise<void>;
+  abstract async clearEnvironment(): Promise<void>;
   /**
    * Gera uma lista contendo os objetos que serão utilizados no teste de performance.
    * @param samplingAmount - Quantidade de dados que serão utilizados no teste
@@ -28,6 +29,7 @@ abstract class SimulationController {
     let data = [];
     let data2 = [];
     let auxTableAmount = samplingAmount * 0.2;
+    console.log('DATABASE NAME', this.getDatabaseName());
     for (let i = 0; i <= samplingAmount; i++) {
       simulationBuilder = new SimulationDataBuilder({
         samplingAmount,
