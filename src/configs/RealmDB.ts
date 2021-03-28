@@ -5,6 +5,6 @@ import SimulationDataRealm from "../models/realm/SimulationDataRealm";
 
 export default function getRealm() {
   return Realm.open({
-    schema: [SimulationData2Realm, SimulationDataRealm],
+    schema: [SimulationData2Realm.schema, SimulationDataRealm.schema],
   });
 }

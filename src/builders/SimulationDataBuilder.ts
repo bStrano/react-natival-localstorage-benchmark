@@ -3,6 +3,7 @@ import DatabasesEnum from "../constants/Databases";
 import RandomUtil from "../utils/RandomUtil";
 import SimulationDataRealm from "../models/realm/SimulationDataRealm";
 import SimulationData2Realm from "../models/realm/SimulationData2Realm";
+import { BSON } from "realm";
 
 interface ISimulationBuilder {
   produceSQLite(): SimulationDataSQLite;
@@ -25,7 +26,7 @@ class SimulationDataBuilder implements ISimulationBuilder {
     this.data = {
       simulation2: new SimulationData2Realm({
         id: Math.floor(Math.random() * (this.samplingAmount - 1 + 1) + 1),
-        name: '',
+        name: '...',
       }),
       timestamp: new Date(),
       string: RandomUtil.getRandomString(),
@@ -38,7 +39,10 @@ class SimulationDataBuilder implements ISimulationBuilder {
   }
 
   produceRealm(): SimulationDataRealm {
-    return new SimulationDataRealm(this.data);
+    return new SimulationDataRealm({
+      ...this.data,
+      id: new BSON.ObjectID(),
+    });
   }
 
   build(): SimulationDataSQLite | SimulationDataRealm {

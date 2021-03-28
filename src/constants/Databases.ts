@@ -1,6 +1,6 @@
 enum DatabasesEnum {
-  REALM,
   SQLITE,
+  REALM,
   // FIREBASE,
 }
 

@@ -2,6 +2,7 @@ import SimulationData2SQLite from "../models/SQLite/SimulationData2SQLite";
 import DatabasesEnum from "../constants/Databases";
 import RandomUtil from "../utils/RandomUtil";
 import SimulationData2Realm from "../models/realm/SimulationData2Realm";
+import { BSON } from "realm";
 
 interface ISimulationBuilder {
   produceSQLite(): SimulationData2SQLite;
@@ -32,7 +33,10 @@ class SimulationDataBuilder<T> implements ISimulationBuilder {
   }
 
   produceRealm(): SimulationData2Realm {
-    return new SimulationData2Realm(this.data);
+    return new SimulationData2Realm({
+      ...this.data,
+      id: new BSON.ObjectID(),
+    });
   }
 
   build(): SimulationData2SQLite | SimulationData2Realm {

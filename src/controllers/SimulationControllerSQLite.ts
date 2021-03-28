@@ -71,7 +71,6 @@ class SimulationControllerSQLite extends SimulationController {
     return new Promise((resolve, reject) => {
       db.transaction(
         tx => {
-          console.time('SELECT');
           tx.executeSql(
             'SELECT * FROM Simulation  ORDER BY number',
             [],
@@ -98,7 +97,6 @@ class SimulationControllerSQLite extends SimulationController {
     return new Promise((resolve, reject) => {
       db.transaction(
         tx => {
-          console.time('SELECTJOIN');
           tx.executeSql(
             'SELECT * FROM Simulation  LEFT JOIN SIMULATION2 on SIMULATION.simulation2_id = SIMULATION2.id ORDER BY number',
             [],
@@ -158,7 +156,6 @@ class SimulationControllerSQLite extends SimulationController {
     return new Promise((resolve, reject) => {
       db.transaction(
         tx => {
-          console.time('INSERT');
           values.forEach(item => {
             tx.executeSql(
               `

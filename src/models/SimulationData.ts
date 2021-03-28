@@ -4,6 +4,10 @@ export enum ISimulationStatus {
   READY,
   PREPARATION,
   PROGRESS,
+  INSERTING,
+  SELECTING,
+  SELECTING_JOIN,
+  FINISHED = 3,
 }
 
 interface ISimulationConstructor {
@@ -33,6 +37,16 @@ class SimulationData {
     this.string = string;
     this.timestamp = timestamp;
     this.simulation2 = simulation2;
+  }
+
+  toJSON() {
+    return {
+      id: this._id,
+      number: this.number,
+      string: this.string,
+      timestamp: this.timestamp,
+      simulation2: this.simulation2,
+    };
   }
 }
 

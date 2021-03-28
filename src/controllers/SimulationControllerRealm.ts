@@ -9,7 +9,9 @@ class SimulationControllerRealm extends SimulationController {
 
   async clearEnvironment(): Promise<void> {
     const realm = await getRealm();
+    realm.beginTransaction();
     await realm.deleteAll();
+    realm.commitTransaction();
   }
 
   async createEnvironment(): Promise<void> {
@@ -23,15 +25,17 @@ class SimulationControllerRealm extends SimulationController {
   async insertAll(data: any[], data2: any[]): Promise<void> {
     const realm = await getRealm();
     return new Promise((resolve, reject) => {
-      realm.write(() => {
+      realm.write(async () => {
+        console.log('Write Start');
         data2.forEach(item => {
-          realm.create('SimulationData2Realm', item);
+          realm.create('SimulationData2', item);
         });
 
         data.forEach(item => {
-          realm.create('SimulationDataRealm', item);
+          realm.create('SimulationData', item);
         });
 
+        console.log('Write End');
         resolve();
       });
     });
@@ -40,8 +44,8 @@ class SimulationControllerRealm extends SimulationController {
   async selectAll(): Promise<void> {
     const realm = await getRealm();
 
-    const data = realm.objects('SimulationDataRealm').sorted('number');
-    console.log(data.length);
+    const data = realm.objects('SimulationData').sorted('number');
+    console.log('Realm length', data.length);
   }
 
   async selectAllWithJoin(): Promise<void> {

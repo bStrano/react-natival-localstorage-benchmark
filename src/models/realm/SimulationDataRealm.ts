@@ -3,10 +3,10 @@ import Realm from "realm";
 
 class SimulationDataRealm extends SimulationData {
   public static schema: Realm.ObjectSchema = {
-    name: 'Simulation',
+    name: 'SimulationData',
     primaryKey: '_id',
     properties: {
-      _id: 'objectId',
+      _id: {type: 'objectId', indexed: true},
       number: 'float',
       string: 'string',
       timestamp: 'date',

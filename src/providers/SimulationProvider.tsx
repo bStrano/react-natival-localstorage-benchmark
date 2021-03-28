@@ -5,6 +5,7 @@ import Benchmark from "../models/Benchmark";
 import DatabasesEnum from "../constants/Databases";
 import SimulationController from "../controllers/SimulationController";
 import SimulationControllerRealm from "../controllers/SimulationControllerRealm";
+import lodash from "lodash";
 
 interface ISimulationProviderProps {
   children: JSX.Element;
@@ -19,6 +20,7 @@ interface ISimulationContext {
   startSimulation: () => void;
 }
 
+const currentBenchmark = {current: new Benchmark()};
 export const SimulationContext = React.createContext<ISimulationContext | null>(
   null,
 );
@@ -29,31 +31,34 @@ function SimulationProvider(props: ISimulationProviderProps) {
     new Benchmark(),
     new Benchmark(),
   ]);
+  const benchmarks = useRef<Benchmark[]>([
+    new Benchmark(),
+    new Benchmark(),
+    new Benchmark(),
+  ]);
   const activeDatabase = useRef<number>(DatabasesEnum.SQLITE);
   const [status, setStatus] = useState(ISimulationStatus.READY);
   const simulationController = useRef<SimulationController>(
     new SimulationControllerSQLite(),
   );
-  const currentBenchmark = useRef<Benchmark>(new Benchmark());
 
   useEffect(() => {
     console.log(status);
   }, [status]);
 
   function updateBenchmark() {
-    let benchmarkDataClone = [...benchmarkData];
-
-    benchmarkDataClone[activeDatabase.current] = currentBenchmark.current;
-    setBenchmarkData(benchmarkDataClone);
-    console.log(currentBenchmark.current.getInsertPerformance());
-    console.log(currentBenchmark.current.getSelectPerformance());
-    console.log(currentBenchmark.current.getSelectRelation());
+    // let benchmarkDataClone = [...benchmarkData];
+    // benchmarkDataClone[activeDatabase.current] = lodash.cloneDeep(
+    //   currentBenchmark.current,
+    // );
+    // setBenchmarkData(benchmarkDataClone);
+    benchmarks.current[activeDatabase.current] = lodash.cloneDeep(
+      currentBenchmark.current,
+    );
+    setBenchmarkData(benchmarks.current);
   }
 
   async function startSimulation() {
-    console.log(DatabasesEnum);
-    console.log(Object.keys(DatabasesEnum));
-    console.log(Object.values(DatabasesEnum));
     for (let value of Object.values(DatabasesEnum)) {
       if (typeof value === 'number') {
         await startSimulationDatabase(value);
@@ -63,7 +68,6 @@ function SimulationProvider(props: ISimulationProviderProps) {
 
   async function startSimulationDatabase(database: DatabasesEnum) {
     try {
-      console.log('Iniciando processo', database);
       await changeDatabase(database);
       await simulationController.current.createEnvironment();
       if (status === ISimulationStatus.READY) {
@@ -77,11 +81,11 @@ function SimulationProvider(props: ISimulationProviderProps) {
         await runSection('insert', async () => {
           await simulationController.current.insertAll([...data], [...data2]);
         });
-        await runSection('selectRelation', async () => {
-          await simulationController.current.selectAllWithJoin();
-        });
         await runSection('select', async () => {
           await simulationController.current.selectAll();
+        });
+        await runSection('selectRelation', async () => {
+          await simulationController.current.selectAllWithJoin();
         });
 
         await simulationController.current.clearEnvironment();
@@ -101,21 +105,36 @@ function SimulationProvider(props: ISimulationProviderProps) {
     await commandCB();
     currentBenchmark!.current[name].final = new Date().getTime();
     console.log(`[${name}] End`);
+
+    switch (name) {
+      case 'insert':
+        setStatus(ISimulationStatus.INSERTING);
+        break;
+      case 'select':
+        setStatus(ISimulationStatus.SELECTING);
+        break;
+      case 'selectRelation':
+        setStatus(ISimulationStatus.SELECTING_JOIN);
+        break;
+    }
     updateBenchmark();
   }
 
   async function changeDatabase(database: DatabasesEnum) {
-    currentBenchmark.current = new Benchmark();
     switch (database) {
       case DatabasesEnum.REALM:
         simulationController.current = new SimulationControllerRealm();
+        activeDatabase.current = DatabasesEnum.REALM;
         break;
       case DatabasesEnum.SQLITE:
+        activeDatabase.current = DatabasesEnum.SQLITE;
         simulationController.current = new SimulationControllerSQLite();
+
         break;
       default:
         break;
     }
+    currentBenchmark.current = new Benchmark();
   }
 
   return (
