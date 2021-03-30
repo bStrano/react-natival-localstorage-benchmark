@@ -7,14 +7,15 @@ import DatabasesEnum from "../constants/Databases";
 interface IBenchmarkCardProps {
   title: string;
   database: DatabasesEnum;
+  color?: string;
 }
 
-function BenchmarkCard({title, database}: IBenchmarkCardProps) {
+function BenchmarkCard({title, database, color}: IBenchmarkCardProps) {
   const simulationContext = useContext(SimulationContext);
 
   return (
-    <View>
-      <Text style={{fontWeight: 'bold', fontSize: 16}}>{title}</Text>
+    <View style={{paddingVertical: 20}}>
+      <Text style={{color, fontWeight: 'bold', fontSize: 16}}>{title}</Text>
       <BenchmarkItem
         label={'Insert'}
         value={simulationContext!.benchmarkData[

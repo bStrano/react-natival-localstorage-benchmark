@@ -4,16 +4,12 @@ interface ISimulation2Constructor {
 }
 
 class SimulationData2 {
-  private readonly _id?: number | ObjectId;
+  _id?: number | ObjectId;
   name?: string;
 
   constructor({id, name}: ISimulation2Constructor) {
     this._id = id;
     this.name = name;
-  }
-
-  get id(): number | ObjectId {
-    return this._id;
   }
 
   toJSON() {

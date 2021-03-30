@@ -24,8 +24,21 @@ function HomeScreen(props: IHomeScreenProps) {
           title="Iniciar simulação"
           color="#841584"
         />
-        <BenchmarkCard title={'SQLite'} database={DatabasesEnum.SQLITE} />
-        <BenchmarkCard title={'Realm'} database={DatabasesEnum.REALM} />
+        <BenchmarkCard
+          title={'SQLite'}
+          database={DatabasesEnum.SQLITE}
+          color={'#1F86C9'}
+        />
+        <BenchmarkCard
+          title={'Realm'}
+          database={DatabasesEnum.REALM}
+          color="#59569D"
+        />
+        <BenchmarkCard
+          title={'WatermelonDB'}
+          database={DatabasesEnum.WATERMELON}
+          color="#FF534F"
+        />
         {/*<Text>*/}
         {/*  {SimulationController.getStatusName(simulationContext?.status)}*/}
         {/*</Text>*/}

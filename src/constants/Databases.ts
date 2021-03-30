@@ -1,7 +1,7 @@
 enum DatabasesEnum {
   SQLITE,
   REALM,
-  // FIREBASE,
+  WATERMELON,
 }
 
 export default DatabasesEnum;
