@@ -6,6 +6,7 @@ import DatabasesEnum from "../constants/Databases";
 import SimulationController from "../controllers/SimulationController";
 import SimulationControllerRealm from "../controllers/SimulationControllerRealm";
 import lodash from "lodash";
+import SimulationControllerWatermelon from "../controllers/SimulationControllerWatermelon";
 
 interface ISimulationProviderProps {
   children: JSX.Element;
@@ -129,7 +130,10 @@ function SimulationProvider(props: ISimulationProviderProps) {
       case DatabasesEnum.SQLITE:
         activeDatabase.current = DatabasesEnum.SQLITE;
         simulationController.current = new SimulationControllerSQLite();
-
+        break;
+      case DatabasesEnum.WATERMELON:
+        activeDatabase.current = DatabasesEnum.WATERMELON;
+        simulationController.current = new SimulationControllerWatermelon();
         break;
       default:
         break;

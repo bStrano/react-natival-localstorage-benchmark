@@ -3,10 +3,12 @@ import DatabasesEnum from "../constants/Databases";
 import RandomUtil from "../utils/RandomUtil";
 import SimulationData2Realm from "../models/realm/SimulationData2Realm";
 import { BSON } from "realm";
+import SimulationData2 from "../models/SimulationData2";
 
 interface ISimulationBuilder {
   produceSQLite(): SimulationData2SQLite;
   produceRealm(): SimulationData2Realm;
+  produceWatermelon(): SimulationData2;
   build(): SimulationData2SQLite | SimulationData2Realm;
 }
 
@@ -45,7 +47,16 @@ class SimulationDataBuilder<T> implements ISimulationBuilder {
         return this.produceRealm();
       case DatabasesEnum.SQLITE:
         return this.produceSQLite();
+      case DatabasesEnum.WATERMELON:
+        return this.produceWatermelon();
     }
+  }
+
+  produceWatermelon() {
+    return new SimulationData2({
+      ...this.data,
+      id: Math.random(),
+    });
   }
 }
 export default SimulationDataBuilder;

@@ -4,22 +4,19 @@ import { field } from "@nozbe/watermelondb/decorators";
 
 class SimulationData2Watermelon extends Model implements SimulationData2 {
   static table = 'simulation_data2';
-  @field('id')
-  _id: number | ObjectId;
-  @field('name')
-  name: string;
+  static associations = {
+    simulation_data: {type: 'belongs_to', key: 'simulation2_id'},
+  } as const;
 
+  @field('test')
+  _id!: number | ObjectId;
+  @field('name')
+  name!: string;
   toJSON(): {name: string | undefined; _id: number | ObjectId | undefined} {
     return {
       name: this.name,
       _id: this._id,
     };
-  }
-
-  constructor(id: number | ObjectId, name: string) {
-    super();
-    this._id = id;
-    this.name = name;
   }
 }
 

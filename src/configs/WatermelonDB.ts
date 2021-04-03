@@ -12,7 +12,7 @@ import SimulationData2Watermelon from "../models/watermelon/SimulationData2Water
 const adapter = new SQLiteAdapter({
   schema,
   // optional database name or file system path
-  // dbName: 'myapp',
+  dbName: 'watermelondb',
   // optional migrations
   // migrations,
   // synchronous mode only works on iOS. improves performance and reduces glitches in most cases, but also has some downsides - test with and without it

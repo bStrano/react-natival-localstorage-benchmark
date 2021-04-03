@@ -6,7 +6,7 @@ class SimulationDataSQLite
   implements ISimulationDataSQLite {
   getValues() {
     return `
-      (${this.number}, '${this.string}', '${this.timestamp}', ${this.simulation2.id})
+      (${this.number}, '${this.string}', '${this.timestamp}', ${this.simulation2._id})
     `;
   }
 }

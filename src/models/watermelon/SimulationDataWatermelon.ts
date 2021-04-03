@@ -1,25 +1,29 @@
 import SimulationData from "../SimulationData";
 import { Model } from "@nozbe/watermelondb";
-import SimulationData2 from "../SimulationData2";
 import { date, field, relation } from "@nozbe/watermelondb/decorators";
+import SimulationData2Watermelon from "./SimulationData2Watermelon";
 
 class SimulationDataWatermelon extends Model implements SimulationData {
   static table = 'simulation_data';
-  @field('id')
-  _id: number;
+  static associations = {
+    simulation_data2: {type: 'has_many', foreignKey: 'simulation2_id'},
+  } as const;
+
+  @field('test')
+  _id!: number;
   @field('number')
-  number: number;
+  number!: number;
   @relation('simulation_data2', 'simulation2_id')
-  simulation2: SimulationData2;
+  simulation2!: SimulationData2Watermelon;
   @field('string')
-  string: string;
+  string!: string;
   @date('timestamp')
-  timestamp: Date;
+  timestamp!: Date;
 
   toJSON(): {
     number: number;
     string: string;
-    simulation2: SimulationData2;
+    simulation2: SimulationData2Watermelon;
     id: number | undefined;
     timestamp: Date;
   } {
@@ -30,21 +34,6 @@ class SimulationDataWatermelon extends Model implements SimulationData {
       id: this._id,
       timestamp: this.timestamp,
     };
-  }
-
-  constructor(
-    id: number,
-    number: number,
-    simulation2: SimulationData2,
-    string: string,
-    timestamp: Date,
-  ) {
-    super();
-    this._id = id;
-    this.number = number;
-    this.simulation2 = simulation2;
-    this.string = string;
-    this.timestamp = timestamp;
   }
 }
 

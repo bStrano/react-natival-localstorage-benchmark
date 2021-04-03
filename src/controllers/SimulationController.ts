@@ -24,28 +24,33 @@ abstract class SimulationController {
    * @param database
    */
   generateData(samplingAmount: number) {
-    let simulationBuilder;
-    let simulationBuilder2;
-    let data = [];
-    let data2 = [];
-    let auxTableAmount = samplingAmount * 0.2;
-    console.log('DATABASE NAME', this.getDatabaseName());
-    for (let i = 0; i <= samplingAmount; i++) {
-      simulationBuilder = new SimulationDataBuilder({
-        samplingAmount,
-        database: this.getDatabaseName(),
-      });
-      data.push(simulationBuilder.build());
-      if (i <= auxTableAmount) {
-        simulationBuilder2 = new SimulationData2Builder({
+    try {
+      let simulationBuilder;
+      let simulationBuilder2;
+      let data = [];
+      let data2 = [];
+      let auxTableAmount = samplingAmount * 0.2;
+      console.log('DATABASE NAME', this.getDatabaseName());
+      for (let i = 0; i <= samplingAmount; i++) {
+        simulationBuilder = new SimulationDataBuilder({
           samplingAmount,
           database: this.getDatabaseName(),
         });
-        data2.push(simulationBuilder2.build());
+        data.push(simulationBuilder.build());
+        if (i <= auxTableAmount) {
+          simulationBuilder2 = new SimulationData2Builder({
+            samplingAmount,
+            database: this.getDatabaseName(),
+          });
+          data2.push(simulationBuilder2.build());
+        }
       }
+      console.log('Data generated');
+      return {data, data2};
+    } catch (e) {
+      console.error('Failed to generate data', e);
+      throw e;
     }
-
-    return {data, data2};
   }
 
   getStatusName(status: ISimulationStatus) {

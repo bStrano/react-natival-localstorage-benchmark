@@ -6,17 +6,17 @@ export const schema = appSchema({
     tableSchema({
       name: 'simulation_data',
       columns: [
-        {name: '_id', type: 'string'},
+        {name: 'test', type: 'number', isOptional: true},
         {name: 'number', type: 'string', isOptional: true},
         {name: 'string', type: 'string'},
-        {name: 'date', type: 'boolean'},
-        {name: 'simulation2_id', type: 'number'},
+        {name: 'timestamp', type: 'string'},
+        {name: 'simulation2_id', type: 'string'},
       ],
     }),
     tableSchema({
       name: 'simulation_data2',
       columns: [
-        {name: '_id', type: 'string'},
+        {name: 'test', type: 'number', isOptional: true},
         {name: 'name', type: 'string'},
       ],
     }),
