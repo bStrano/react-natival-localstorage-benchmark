@@ -16,7 +16,9 @@ class SimulationControllerWatermelon extends SimulationController {
   }
 
   async clearEnvironment(): Promise<void> {
-    return Promise.resolve(undefined);
+    return await database.action(async () => {
+      await database.unsafeResetDatabase();
+    });
   }
 
   async createEnvironment(): Promise<void> {
@@ -68,7 +70,7 @@ class SimulationControllerWatermelon extends SimulationController {
 
   async selectAll(): Promise<void> {
     let simulationDataCollection = await database.collections.get(
-      'simulation_data2',
+      'simulation_data',
     );
     let simulationData = await simulationDataCollection.query().fetch();
     console.log(simulationData);
@@ -76,7 +78,13 @@ class SimulationControllerWatermelon extends SimulationController {
   }
 
   async selectAllWithJoin(): Promise<void> {
-    return Promise.resolve(undefined);
+    // TESTES
+    let simulationDataCollection = await database.collections.get(
+      'simulation_data',
+    );
+    let simulationData = await simulationDataCollection.query().fetch();
+    console.log(simulationData[0]);
+    console.log(simulationData.length);
   }
 }
 
